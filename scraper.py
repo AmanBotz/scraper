@@ -35,8 +35,8 @@ def scrape_video_and_thumbnail(url):
             else:
                 logger.warning(f"No video URL found for item #{idx + 1}")
 
-            # Extract the thumbnail URL
-            thumbnail_tag = item.find('img', class_='tnum-1 thumb-image-container__image')
+            # Extract the thumbnail URL using the correct class
+            thumbnail_tag = item.find('img', class_='thumb-image-container__image')
             if thumbnail_tag:
                 thumbnail_url = thumbnail_tag['src']
                 if thumbnail_url.startswith('https://ic-vt-nss.xhcdn.com/'):
