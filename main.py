@@ -16,16 +16,22 @@ async def handle_message(update: Update, context: CallbackContext):
         url = update.message.text
         logger.info(f"Received URL: {url}")
 
+        # Call the scraper function
         videos, thumbnails = scrape_video_and_thumbnail(url)
 
         if videos and thumbnails:
+            # Check if URLs are scraped properly
+            logger.info(f"Scraped {len(videos)} video URLs and {len(thumbnails)} thumbnail URLs")
+
             # Write video URLs to a text file
             with open("video_urls.txt", "w") as video_file:
-                video_file.write("\n".join(videos))
+                for video in videos:
+                    video_file.write(f"{video}\n")
 
             # Write thumbnail URLs to a text file
             with open("thumbnail_urls.txt", "w") as thumb_file:
-                thumb_file.write("\n".join(thumbnails))
+                for thumbnail in thumbnails:
+                    thumb_file.write(f"{thumbnail}\n")
 
             # Send the video URLs file
             await update.message.reply_document(InputFile("video_urls.txt"))
