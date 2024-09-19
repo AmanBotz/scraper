@@ -27,19 +27,16 @@ async def scrape(update: Update, context):
         await update.message.reply_text("No valid video or thumbnail links found.")
 
 def main():
-    # Use the 'PORT' environment variable provided by Koyeb
-    port = int(os.getenv("PORT", 8000))
-
     # Create the Application and set the bot token from the environment variable
-    app = ApplicationBuilder().token(os.getenv("BOT_TOK")).build()
+    app = ApplicationBuilder().token(os.getenv("TELEGRAM_BOT_TOKEN")).build()
 
     # Handlers
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, scrape))
 
-    # Run the bot using polling
+    # Run the bot using polling (no port needed for polling mode)
     logger.info("Bot started. Use polling.")
-    app.run_polling(port=port)
+    app.run_polling()
 
 if __name__ == '__main__':
     main()
