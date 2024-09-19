@@ -1,29 +1,40 @@
 import requests
 from bs4 import BeautifulSoup
 
-def scrape_videos_and_thumbnails(url):
+def scrape_video_and_thumbnail(url):
     response = requests.get(url)
     if response.status_code != 200:
-        raise Exception("Failed to load page")
-    
-    soup = BeautifulSoup(response.content, 'html.parser')
-    
-    # Modify this section based on the actual page structure
-    video_elements = soup.select("a.video-thumb__image-container")  # Adjust as per the page structure
-    video_urls = []
-    thumbnail_urls = []
-    
-    for video in video_elements:
-        video_url = video.get('href')
-        thumbnail_url = video.find('img')['src']
+        print(f"Error fetching page: {response.status_code}")
+        return []
 
-        # Avoid duplicates or invalid links
-        if "xhamster.com" in video_url and video_url not in video_urls:
-            video_urls.append(video_url)
-        if "xhamster.com" in thumbnail_url and thumbnail_url not in thumbnail_urls:
-            thumbnail_urls.append(thumbnail_url)
-    
-    if not video_urls or not thumbnail_urls:
-        raise Exception("No valid video or thumbnail links found")
-    
-    return video_urls, thumbnail_urls
+    soup = BeautifulSoup(response.content, 'html.parser')
+    video_links = []
+    thumbnail_links = []
+
+    # Find all video items in the page
+    for item in soup.find_all('div', class_='thumb-list__item video-thumb video-thumb--type-video'):
+        video_url = item.find('a', class_='video-thumb__image-container')['href']
+        if 'https://xhamster.com/videos/' in video_url and not any(ext in video_url for ext in ['.mp4', '.avi', '.mov']):
+            video_links.append(video_url)
+        
+        thumbnail_url = item.find('img', class_='tnum-1 thumb-image-container__image')['src']
+        if 'https://ic-vt-nss.xhcdn.com/' in thumbnail_url:
+            thumbnail_links.append(thumbnail_url)
+
+    # Remove duplicates
+    video_links = list(set(video_links))
+    thumbnail_links = list(set(thumbnail_links))
+
+    return video_links, thumbnail_links
+
+# Test the function
+url = 'https://xhamster.com/categories/indian'  # replace with the actual URL
+videos, thumbnails = scrape_video_and_thumbnail(url)
+
+print("Video URLs:")
+for video in videos[:5]:  # Displaying the first 5 links
+    print(video)
+
+print("\nThumbnail URLs:")
+for thumbnail in thumbnails[:5]:  # Displaying the first 5 links
+    print(thumbnail)
