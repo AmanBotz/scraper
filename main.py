@@ -23,25 +23,29 @@ async def handle_message(update: Update, context: CallbackContext):
             # Check if URLs are scraped properly
             logger.info(f"Scraped {len(videos)} video URLs and {len(thumbnails)} thumbnail URLs")
 
-            # Write video URLs to a text file with the correct .txt extension
-            video_file_path = "video_urls.txt"
+            # Absolute paths for the files
+            video_file_path = "/tmp/video_urls.txt"
+            thumbnail_file_path = "/tmp/thumbnail_urls.txt"
+
+            # Write video URLs to a text file
             with open(video_file_path, "w") as video_file:
                 for video in videos:
                     video_file.write(f"{video}\n")
 
-            # Write thumbnail URLs to a text file with the correct .txt extension
-            thumbnail_file_path = "thumbnail_urls.txt"
+            # Write thumbnail URLs to a text file
             with open(thumbnail_file_path, "w") as thumb_file:
                 for thumbnail in thumbnails:
                     thumb_file.write(f"{thumbnail}\n")
 
             # Send the video URLs file
-            await update.message.reply_document(InputFile(video_file_path))
+            with open(video_file_path, "rb") as video_file:
+                await update.message.reply_document(document=InputFile(video_file, filename="video_urls.txt"))
 
             # Send the thumbnail URLs file
-            await update.message.reply_document(InputFile(thumbnail_file_path))
+            with open(thumbnail_file_path, "rb") as thumb_file:
+                await update.message.reply_document(document=InputFile(thumb_file, filename="thumbnail_urls.txt"))
 
-            # Optionally, clean up the files after sending
+            # Clean up the files after sending
             os.remove(video_file_path)
             os.remove(thumbnail_file_path)
         else:
