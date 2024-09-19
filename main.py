@@ -30,7 +30,7 @@ async def error_handler(update: object, context: object):
 
 if __name__ == '__main__':
     # Replace 'your-bot-token' with the actual token from @BotFather
-    application = Application.builder().token('your-bot-token').build()
+    application = Application.builder().token('7514151326:AAHv7qDprIuS6gkVSaYIzn6Fln2FYg4gtek').build()
 
     # Add handlers
     application.add_handler(CommandHandler('start', start))
