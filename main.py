@@ -21,24 +21,29 @@ async def scrape(update: Update, context):
     url = update.message.text
     logger.info(f"Received URL: {url}")
 
+    # Call the scraper function to get video and thumbnail URLs
     videos, thumbnails = scrape_video_and_thumbnail(url)
 
     if videos and thumbnails:
         # Write video URLs to a text file
         video_file_path = "/tmp/video_urls.txt"
         with open(video_file_path, "w") as video_file:
-            video_file.write("\n".join(videos))
+            for video in videos:
+                video_file.write(f"{video}\n")
 
         # Write thumbnail URLs to a text file
         thumbnail_file_path = "/tmp/thumbnail_urls.txt"
         with open(thumbnail_file_path, "w") as thumb_file:
-            thumb_file.write("\n".join(thumbnails))
+            for thumbnail in thumbnails:
+                thumb_file.write(f"{thumbnail}\n")
 
         # Send the video URLs file
-        await update.message.reply_document(InputFile(video_file_path, filename="video_urls.txt"))
+        with open(video_file_path, "rb") as video_file:
+            await update.message.reply_document(InputFile(video_file, filename="video_urls.txt"))
 
         # Send the thumbnail URLs file
-        await update.message.reply_document(InputFile(thumbnail_file_path, filename="thumbnail_urls.txt"))
+        with open(thumbnail_file_path, "rb") as thumb_file:
+            await update.message.reply_document(InputFile(thumb_file, filename="thumbnail_urls.txt"))
 
         # Clean up files after sending
         os.remove(video_file_path)
@@ -60,7 +65,7 @@ def main():
     thread.start()
 
     # Create the Application and set the bot token from the environment variable
-    app = ApplicationBuilder().token(os.getenv("BOT_TOK")).build()
+    app = ApplicationBuilder().token(os.getenv("TELEGRAM_BOT_TOKEN")).build()
 
     # Handlers
     app.add_handler(CommandHandler("start", start))
