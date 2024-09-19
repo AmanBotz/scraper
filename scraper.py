@@ -5,7 +5,7 @@ def scrape_video_and_thumbnail(url):
     response = requests.get(url)
     if response.status_code != 200:
         print(f"Error fetching page: {response.status_code}")
-        return []
+        return [], []
 
     soup = BeautifulSoup(response.content, 'html.parser')
     video_links = []
@@ -13,12 +13,14 @@ def scrape_video_and_thumbnail(url):
 
     # Find all video items in the page
     for item in soup.find_all('div', class_='thumb-list__item video-thumb video-thumb--type-video'):
+        # Extract video URL
         video_url = item.find('a', class_='video-thumb__image-container')['href']
-        if 'https://xhamster.com/videos/' in video_url and not any(ext in video_url for ext in ['.mp4', '.avi', '.mov']):
+        if video_url.startswith('https://xhamster.com/videos/'):
             video_links.append(video_url)
         
+        # Extract thumbnail URL
         thumbnail_url = item.find('img', class_='tnum-1 thumb-image-container__image')['src']
-        if 'https://ic-vt-nss.xhcdn.com/' in thumbnail_url:
+        if thumbnail_url.startswith('https://ic-vt-nss.xhcdn.com/a/'):
             thumbnail_links.append(thumbnail_url)
 
     # Remove duplicates
