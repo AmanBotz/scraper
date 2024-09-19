@@ -22,7 +22,7 @@ async def scrape(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text(f"Error: {str(e)}")
 
 def main() -> None:
-    application = ApplicationBuilder().token('YOUR_TELEGRAM_BOT_TOKEN').build()
+    application = ApplicationBuilder().token('7514151326:AAHv7qDprIuS6gkVSaYIzn6Fln2FYg4gtek').build()
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("scrape", scrape))
