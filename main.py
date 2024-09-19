@@ -1,8 +1,10 @@
 import os
 import logging
 from telegram import Update, InputFile
-from telegram.ext import ApplicationBuilder, MessageHandler, filters
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
 from scraper import scrape_video_and_thumbnail
+from http.server import SimpleHTTPRequestHandler, HTTPServer
+import threading
 
 # Configure logging
 logging.basicConfig(
@@ -38,17 +40,30 @@ async def scrape(update: Update, context):
         # Send the thumbnail URLs file
         await update.message.reply_document(InputFile(thumbnail_file_path, filename="thumbnail_urls.txt"))
 
-        # Optionally, clean up the files after sending
+        # Clean up files after sending
         os.remove(video_file_path)
         os.remove(thumbnail_file_path)
     else:
         await update.message.reply_text("No valid video or thumbnail links found.")
 
+# Function to start a simple HTTP server for health checks
+def run_http_server():
+    handler = SimpleHTTPRequestHandler
+    httpd = HTTPServer(('0.0.0.0', int(os.environ.get("PORT", 8000))), handler)
+    logger.info("HTTP server started for health check")
+    httpd.serve_forever()
+
 def main():
+    # Start HTTP server in a separate thread for health checks
+    thread = threading.Thread(target=run_http_server)
+    thread.daemon = True
+    thread.start()
+
     # Create the Application and set the bot token from the environment variable
     app = ApplicationBuilder().token(os.getenv("BOT_TOK")).build()
 
     # Handlers
+    app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, scrape))
 
     # Run the bot using polling
