@@ -19,9 +19,11 @@ def scrape_video_and_thumbnail(url):
             video_links.append(video_url)
         
         # Extract thumbnail URL
-        thumbnail_url = item.find('img', class_='tnum-1 thumb-image-container__image')['src']
-        if thumbnail_url.startswith('https://ic-vt-nss.xhcdn.com/a/'):
-            thumbnail_links.append(thumbnail_url)
+        img_tag = item.find('img', class_='tnum-1 thumb-image-container__image')
+        if img_tag and 'src' in img_tag.attrs:  # Check if img_tag exists and has 'src'
+            thumbnail_url = img_tag['src']
+            if thumbnail_url.startswith('https://ic-vt-nss.xhcdn.com/a/'):
+                thumbnail_links.append(thumbnail_url)
 
     # Remove duplicates
     video_links = list(set(video_links))
