@@ -1,26 +1,47 @@
 import os
+import logging
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from scraper import scrape_video_and_thumbnail
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text('Send me a category URL to get video and thumbnail links!')
+# Enable logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+)
+logger = logging.getLogger(__name__)
 
-async def scrape(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    url = context.args[0]
+# Start command
+async def start(update: Update, context):
+    await update.message.reply_text("Send me a URL and I'll fetch the videos and thumbnails.")
+
+# Handle URLs
+async def handle_message(update: Update, context):
+    url = update.message.text
+    logger.info(f"Received URL: {url}")
+    
     try:
         videos, thumbnails = scrape_video_and_thumbnail(url)
         if videos and thumbnails:
-            response = "Video URLs:\n" + "\n".join(videos[:5]) + "\n\nThumbnail URLs:\n" + "\n".join(thumbnails[:5])
+            response = "Video URLs:\n" + "\n".join(videos) + "\n\nThumbnail URLs:\n" + "\n".join(thumbnails)
         else:
             response = "No valid video or thumbnail links found."
+        
         await update.message.reply_text(response)
     except Exception as e:
+        logger.error(f"Error occurred: {e}")
         await update.message.reply_text(f"An error occurred: {e}")
 
-if __name__ == '__main__':
-    app = ApplicationBuilder().token('7514151326:AAHv7qDprIuS6gkVSaYIzn6Fln2FYg4gtek').build()
-    app.add_handler(CommandHandler('start', start))
-    app.add_handler(CommandHandler('scrape', scrape))
-    # Set up the webhook if needed
-    app.run_webhook(listen="0.0.0.0", port=int(os.environ.get("PORT", 8000)), url_path='https://nasty-nesta-cloaked-49e6c5fc.koyeb.app/')
+def main():
+    # Create the Application and pass your bot's token.
+    app = Application.builder().token(os.getenv("7514151326:AAHv7qDprIuS6gkVSaYIzn6Fln2FYg4gtek")).build()
+
+    # Register handlers
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+
+    # Start the Bot
+    logger.info("Bot started. Use polling.")
+    app.run_polling()
+
+if __name__ == "__main__":
+    main()
