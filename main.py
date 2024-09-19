@@ -28,7 +28,7 @@ async def scrape(update: Update, context):
 
 def main():
     # Create the Application and set the bot token from the environment variable
-    app = ApplicationBuilder().token(os.getenv("TELEGRAM_BOT_TOKEN")).build()
+    app = ApplicationBuilder().token(os.getenv("BOT_TOK")).build()
 
     # Handlers
     app.add_handler(CommandHandler("start", start))
