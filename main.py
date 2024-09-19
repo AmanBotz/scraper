@@ -23,4 +23,4 @@ if __name__ == '__main__':
     app.add_handler(CommandHandler('start', start))
     app.add_handler(CommandHandler('scrape', scrape))
     # Set up the webhook if needed
-    app.run_webhook(listen="0.0.0.0", port=int(os.environ.get("PORT", 8000)), url_path='7514151326:AAHv7qDprIuS6gkVSaYIzn6Fln2FYg4gtek')
+    app.run_webhook(listen="0.0.0.0", port=int(os.environ.get("PORT", 8000)), url_path='https://nasty-nesta-cloaked-49e6c5fc.koyeb.app/')
