@@ -33,7 +33,7 @@ async def handle_message(update: Update, context):
 
 def main():
     # Create the Application and pass your bot's token.
-    app = Application.builder().token(os.getenv("7514151326:AAHv7qDprIuS6gkVSaYIzn6Fln2FYg4gtek")).build()
+    app = Application.builder().token(os.getenv("BOT_TOK")).build()
 
     # Register handlers
     app.add_handler(CommandHandler("start", start))
