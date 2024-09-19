@@ -3,42 +3,21 @@ from bs4 import BeautifulSoup
 
 def scrape_video_and_thumbnail(url):
     response = requests.get(url)
-    if response.status_code != 200:
-        print(f"Error fetching page: {response.status_code}")
-        return [], []
+    response.raise_for_status()  # Raise an error for bad responses
+    soup = BeautifulSoup(response.text, 'html.parser')
 
-    soup = BeautifulSoup(response.content, 'html.parser')
-    video_links = []
-    thumbnail_links = []
+    videos = []
+    thumbnails = []
 
-    # Find all video items in the page
-    for item in soup.find_all('div', class_='thumb-list__item video-thumb video-thumb--type-video'):
-        # Extract video URL
+    for item in soup.find_all("div", class_="thumb-list__item video-thumb video-thumb--type-video"):
         video_url = item.find('a', class_='video-thumb__image-container')['href']
-        if video_url.startswith('https://xhamster.com/videos/'):
-            video_links.append(video_url)
-        
-        # Extract thumbnail URL
-        img_tag = item.find('img', class_='tnum-1 thumb-image-container__image')
-        if img_tag and 'src' in img_tag.attrs:  # Check if img_tag exists and has 'src'
-            thumbnail_url = img_tag['src']
-            if thumbnail_url.startswith('https://ic-vt-nss.xhcdn.com/a/'):
-                thumbnail_links.append(thumbnail_url)
+        thumbnail_url = item.find('img', class_='tnum-1 thumb-image-container__image')['src']
 
-    # Remove duplicates
-    video_links = list(set(video_links))
-    thumbnail_links = list(set(thumbnail_links))
+        if video_url.startswith("https://xhamster.com/videos/") and thumbnail_url.startswith("https://ic-vt-nss.xhcdn.com/a/"):
+            videos.append(video_url)
+            thumbnails.append(thumbnail_url)
 
-    return video_links, thumbnail_links
+    if not videos or not thumbnails:
+        raise ValueError("No valid video or thumbnail links found")
 
-# Test the function
-url = 'https://xhamster.com/categories/indian'  # replace with the actual URL
-videos, thumbnails = scrape_video_and_thumbnail(url)
-
-print("Video URLs:")
-for video in videos[:5]:  # Displaying the first 5 links
-    print(video)
-
-print("\nThumbnail URLs:")
-for thumbnail in thumbnails[:5]:  # Displaying the first 5 links
-    print(thumbnail)
+    return videos, thumbnails
