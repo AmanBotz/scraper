@@ -1,3 +1,4 @@
+import os
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 from scraper import scrape_video_and_thumbnail
@@ -21,4 +22,5 @@ if __name__ == '__main__':
     app = ApplicationBuilder().token('7514151326:AAHv7qDprIuS6gkVSaYIzn6Fln2FYg4gtek').build()
     app.add_handler(CommandHandler('start', start))
     app.add_handler(CommandHandler('scrape', scrape))
-    app.run_polling()
+    # Set up the webhook if needed
+    app.run_webhook(listen="0.0.0.0", port=int(os.environ.get("PORT", 8000)), url_path='7514151326:AAHv7qDprIuS6gkVSaYIzn6Fln2FYg4gtek')
