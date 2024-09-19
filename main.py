@@ -23,25 +23,27 @@ async def handle_message(update: Update, context: CallbackContext):
             # Check if URLs are scraped properly
             logger.info(f"Scraped {len(videos)} video URLs and {len(thumbnails)} thumbnail URLs")
 
-            # Write video URLs to a text file
-            with open("video_urls.txt", "w") as video_file:
+            # Write video URLs to a text file with the correct .txt extension
+            video_file_path = "video_urls.txt"
+            with open(video_file_path, "w") as video_file:
                 for video in videos:
                     video_file.write(f"{video}\n")
 
-            # Write thumbnail URLs to a text file
-            with open("thumbnail_urls.txt", "w") as thumb_file:
+            # Write thumbnail URLs to a text file with the correct .txt extension
+            thumbnail_file_path = "thumbnail_urls.txt"
+            with open(thumbnail_file_path, "w") as thumb_file:
                 for thumbnail in thumbnails:
                     thumb_file.write(f"{thumbnail}\n")
 
             # Send the video URLs file
-            await update.message.reply_document(InputFile("video_urls.txt"))
+            await update.message.reply_document(InputFile(video_file_path))
 
             # Send the thumbnail URLs file
-            await update.message.reply_document(InputFile("thumbnail_urls.txt"))
+            await update.message.reply_document(InputFile(thumbnail_file_path))
 
             # Optionally, clean up the files after sending
-            os.remove("video_urls.txt")
-            os.remove("thumbnail_urls.txt")
+            os.remove(video_file_path)
+            os.remove(thumbnail_file_path)
         else:
             await update.message.reply_text("No valid video or thumbnail links found.")
     
