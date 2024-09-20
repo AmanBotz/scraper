@@ -1,7 +1,7 @@
 import os
 import logging
 from telegram import Update, InputFile
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
+from telegram.ext import ApplicationBuilder, MessageHandler, filters
 from scraper import scrape_video_and_thumbnail
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 import threading
@@ -68,7 +68,6 @@ def main():
     app = ApplicationBuilder().token(os.getenv("BOT_TOK")).build()
 
     # Handlers
-    app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, scrape))
 
     # Run the bot using polling
