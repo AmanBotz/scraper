@@ -19,7 +19,17 @@ def is_video_playable(video_url):
         if unavailable_message:
             logger.warning(f"Video is not available: {video_url}")
             return False
-        return True
+
+        # Additional checks (optional): Look for a <video> tag or other player-related elements
+        video_player = soup.find('video')
+        if video_player:
+            logger.info(f"Video player found for: {video_url}")
+            return True
+
+        # If no video player is found, the video might not be available
+        logger.warning(f"No video player found for: {video_url}, but no 'unavailable' message either.")
+        return False
+
     except Exception as e:
         logger.error(f"Error checking video availability for {video_url}: {e}")
         return False
