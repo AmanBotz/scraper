@@ -6,10 +6,10 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Function to check if the video is available based on "Video is not available" message
+# Function to check if a video is available based on the "Video is not available" message
 def is_video_playable(video_url):
     try:
-        logger.info(f"Visiting video page to check availability: {video_url}")
+        logger.info(f"Checking video availability for: {video_url}")
         # Request the video page to check availability
         response = requests.get(video_url)
         response.raise_for_status()
@@ -21,14 +21,15 @@ def is_video_playable(video_url):
             logger.info(f"Video is not available: {video_url}")
             return False
 
+        # If the message is not found, the video is considered available
         logger.info(f"Video is available: {video_url}")
-        return True  # The video is playable if the "unavailable" message is not found
+        return True
 
     except Exception as e:
         logger.error(f"Error checking video availability for {video_url}: {e}")
         return False
 
-# Function to scrape videos and thumbnails
+# Function to scrape videos and thumbnails from the category page
 def scrape_video_and_thumbnail(url):
     try:
         response = requests.get(url)
@@ -52,12 +53,12 @@ def scrape_video_and_thumbnail(url):
                     video_url = 'https://xhamster.com' + video_url
 
                 if "https://xhamster.com/videos/" in video_url:
-                    # Check if the video is available (playable) by visiting the video URL
+                    # Visit the video page to check if it's available
                     if is_video_playable(video_url):
                         videos.append(video_url)
                         logger.info(f"Added playable video URL: {video_url}")
 
-                        # Extract the corresponding thumbnail URL if the video is playable
+                        # Extract the corresponding thumbnail URL
                         thumbnail_tag = item.find('img', class_='thumb-image-container__image')
                         if thumbnail_tag:
                             thumbnail_url = thumbnail_tag['src']
@@ -69,7 +70,7 @@ def scrape_video_and_thumbnail(url):
                         else:
                             logger.warning(f"No thumbnail tag found for item #{idx + 1}")
                     else:
-                        logger.info(f"Skipping unavailable video URL: {video_url}")
+                        logger.info(f"Skipping unavailable video and its thumbnail: {video_url}")
                 else:
                     logger.warning(f"Invalid video URL pattern: {video_url}")
             else:
