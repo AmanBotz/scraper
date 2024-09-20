@@ -6,12 +6,13 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Function to check if a video is available based solely on the "Video is not available" message
+# Function to check if a video is available based on the "Video is not available" message
 def is_video_playable(video_url):
     try:
         # Fetch the video page to check if the "Video is not available" message exists
+        logger.info(f"Checking video availability for: {video_url}")
         response = requests.get(video_url)
-        response.raise_for_status()
+        response.raise_for_status()  # Make sure the page was successfully loaded
         soup = BeautifulSoup(response.content, 'html.parser')
 
         # Check for the "Video is not available" message
@@ -20,8 +21,8 @@ def is_video_playable(video_url):
             logger.warning(f"Video is not available: {video_url}")
             return False
 
-        # If the "Video is not available" message is not found, assume the video is playable
-        return True
+        logger.info(f"Video is playable: {video_url}")
+        return True  # If the "Video is not available" message is not found, assume the video is playable
 
     except Exception as e:
         logger.error(f"Error checking video availability for {video_url}: {e}")
@@ -53,7 +54,7 @@ def scrape_video_and_thumbnail(url):
                     # Check if the video is available (playable) by visiting the video URL
                     if is_video_playable(video_url):
                         videos.append(video_url)
-                        logger.info(f"Found playable video URL: {video_url}")
+                        logger.info(f"Added playable video URL: {video_url}")
 
                         # Extract the corresponding thumbnail URL if the video is playable
                         thumbnail_tag = item.find('img', class_='thumb-image-container__image')
@@ -61,7 +62,7 @@ def scrape_video_and_thumbnail(url):
                             thumbnail_url = thumbnail_tag['src']
                             if thumbnail_url.startswith('https://ic-vt-nss.xhcdn.com/'):
                                 thumbnails.append(thumbnail_url)
-                                logger.info(f"Found thumbnail URL: {thumbnail_url}")
+                                logger.info(f"Added corresponding thumbnail URL: {thumbnail_url}")
                             else:
                                 logger.warning(f"Invalid thumbnail URL pattern: {thumbnail_url}")
                         else:
