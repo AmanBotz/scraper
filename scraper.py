@@ -6,31 +6,6 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Function to check if a video is available based on the "Video is not available" message
-def is_video_playable(video_url):
-    try:
-        logger.info(f"Checking video availability for: {video_url}")
-        # Request the video page to check availability
-        response = requests.get(video_url)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.content, 'html.parser')
-
-        # Log the page content for debugging (you can disable this after confirming)
-        logger.debug(f"Video page content for {video_url}: {soup.prettify()[:500]}")
-
-        # Check if the "Video is not available" message exists
-        unavailable_message = soup.find('div', class_='noindexed-text', attrs={'data-text': 'Video is not available'})
-        if unavailable_message:
-            logger.info(f"Video is not available: {video_url}")
-            return False
-
-        logger.info(f"Video is available: {video_url}")
-        return True
-
-    except Exception as e:
-        logger.error(f"Error checking video availability for {video_url}: {e}")
-        return False
-
 # Function to scrape videos and thumbnails from the category page
 def scrape_video_and_thumbnail(url):
     try:
@@ -55,34 +30,36 @@ def scrape_video_and_thumbnail(url):
                     video_url = 'https://xhamster.com' + video_url
 
                 if "https://xhamster.com/videos/" in video_url:
-                    # Visit the video page to check if it's available
-                    if is_video_playable(video_url):
-                        videos.append(video_url)
-                        logger.info(f"Added playable video URL: {video_url}")
+                    videos.append(video_url)
+                    logger.info(f"Added video URL: {video_url}")
 
-                        # Extract the corresponding thumbnail URL
-                        thumbnail_tag = item.find('img', class_='thumb-image-container__image')
-                        if thumbnail_tag:
-                            thumbnail_url = thumbnail_tag['src']
-                            if thumbnail_url.startswith('https://ic-vt-nss.xhcdn.com/'):
-                                thumbnails.append(thumbnail_url)
-                                logger.info(f"Added corresponding thumbnail URL: {thumbnail_url}")
-                            else:
-                                logger.warning(f"Invalid thumbnail URL pattern: {thumbnail_url}")
+                    # Extract the corresponding thumbnail URL
+                    thumbnail_tag = item.find('img', class_='thumb-image-container__image')
+                    if thumbnail_tag:
+                        thumbnail_url = thumbnail_tag['src']
+                        if thumbnail_url.startswith('https://ic-vt-nss.xhcdn.com/'):
+                            thumbnails.append(thumbnail_url)
+                            logger.info(f"Added thumbnail URL: {thumbnail_url}")
                         else:
-                            logger.warning(f"No thumbnail tag found for item #{idx + 1}")
+                            logger.warning(f"Invalid thumbnail URL pattern: {thumbnail_url}")
                     else:
-                        logger.info(f"Skipping unavailable video and its thumbnail: {video_url}")
+                        logger.warning(f"No thumbnail tag found for item #{idx + 1}")
                 else:
                     logger.warning(f"Invalid video URL pattern: {video_url}")
             else:
                 logger.warning(f"No video URL found for item #{idx + 1}")
 
         # Log results
-        logger.info(f"Scraping completed. Found {len(videos)} playable video URLs and {len(thumbnails)} corresponding thumbnail URLs.")
+        logger.info(f"Scraping completed. Found {len(videos)} video URLs and {len(thumbnails)} thumbnail URLs.")
 
         return videos, thumbnails
 
     except Exception as e:
         logger.error(f"An error occurred while scraping: {e}")
         return [], []
+
+# Example usage
+if __name__ == '__main__':
+    url = "https://xhamster.com/categories/indian"
+    videos, thumbnails = scrape_video_and_thumbnail(url)
+    print(videos, thumbnails)
