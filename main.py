@@ -2,7 +2,7 @@ import os
 import logging
 from telegram import Update, InputFile
 from telegram.ext import ApplicationBuilder, MessageHandler, filters
-from scraper import scrape_video_and_thumbnail
+from check import check_and_generate_files
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 import threading
 
@@ -21,33 +21,21 @@ async def scrape(update: Update, context):
     url = update.message.text
     logger.info(f"Received URL: {url}")
 
-    # Call the scraper function to get video and thumbnail URLs
-    videos, thumbnails = scrape_video_and_thumbnail(url)
+    # Call the check_and_generate_files function to get valid video and thumbnail URLs
+    video_file, thumbnail_file = check_and_generate_files(url)
 
-    if videos and thumbnails:
-        # Write video URLs to a text file
-        video_file_path = "/tmp/video_urls.txt"
-        with open(video_file_path, "w") as video_file:
-            for video in videos:
-                video_file.write(f"{video}\n")
-
-        # Write thumbnail URLs to a text file
-        thumbnail_file_path = "/tmp/thumbnail_urls.txt"
-        with open(thumbnail_file_path, "w") as thumb_file:
-            for thumbnail in thumbnails:
-                thumb_file.write(f"{thumbnail}\n")
-
+    if video_file and thumbnail_file:
         # Send the video URLs file
-        with open(video_file_path, "rb") as video_file:
-            await update.message.reply_document(InputFile(video_file, filename="video_urls.txt"))
+        with open(video_file, "rb") as vf:
+            await update.message.reply_document(InputFile(vf, filename="video_urls.txt"))
 
         # Send the thumbnail URLs file
-        with open(thumbnail_file_path, "rb") as thumb_file:
-            await update.message.reply_document(InputFile(thumb_file, filename="thumbnail_urls.txt"))
+        with open(thumbnail_file, "rb") as tf:
+            await update.message.reply_document(InputFile(tf, filename="thumbnail_urls.txt"))
 
         # Clean up files after sending
-        os.remove(video_file_path)
-        os.remove(thumbnail_file_path)
+        os.remove(video_file)
+        os.remove(thumbnail_file)
     else:
         await update.message.reply_text("No valid video or thumbnail links found.")
 
