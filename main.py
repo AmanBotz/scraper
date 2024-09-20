@@ -53,7 +53,7 @@ def main():
     thread.start()
 
     # Create the Application and set the bot token from the environment variable
-    app = ApplicationBuilder().token(os.getenv("BOT_TOK")).build()
+    app = ApplicationBuilder().token(os.getenv("TELEGRAM_BOT_TOKEN")).build()
 
     # Handlers
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, scrape))
