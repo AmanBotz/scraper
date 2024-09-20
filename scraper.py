@@ -60,6 +60,6 @@ def scrape_video_and_thumbnail(url):
 
 # Example usage
 if __name__ == '__main__':
-    url = "https://xhamster.com/categories/indian"
+    url = "https://xhamster.com/categories/indian/9"
     videos, thumbnails = scrape_video_and_thumbnail(url)
     print(videos, thumbnails)
