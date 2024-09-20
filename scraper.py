@@ -6,7 +6,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Function to check if a video is available based on the "Video is not available" div
+# Function to check if a video is available based solely on the "Video is not available" message
 def is_video_playable(video_url):
     try:
         # Fetch the video page to check if the "Video is not available" message exists
@@ -20,15 +20,8 @@ def is_video_playable(video_url):
             logger.warning(f"Video is not available: {video_url}")
             return False
 
-        # Additional checks (optional): Look for a <video> tag or other player-related elements
-        video_player = soup.find('video')
-        if video_player:
-            logger.info(f"Video player found for: {video_url}")
-            return True
-
-        # If no video player is found, the video might not be available
-        logger.warning(f"No video player found for: {video_url}, but no 'unavailable' message either.")
-        return False
+        # If the "Video is not available" message is not found, assume the video is playable
+        return True
 
     except Exception as e:
         logger.error(f"Error checking video availability for {video_url}: {e}")
