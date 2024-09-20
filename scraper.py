@@ -15,13 +15,15 @@ def is_video_playable(video_url):
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
 
+        # Log the page content for debugging (you can disable this after confirming)
+        logger.debug(f"Video page content for {video_url}: {soup.prettify()[:500]}")
+
         # Check if the "Video is not available" message exists
         unavailable_message = soup.find('div', class_='noindexed-text', attrs={'data-text': 'Video is not available'})
         if unavailable_message:
             logger.info(f"Video is not available: {video_url}")
             return False
 
-        # If the message is not found, the video is considered available
         logger.info(f"Video is available: {video_url}")
         return True
 
