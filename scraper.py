@@ -6,7 +6,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Function to check if the video is available based on the "Video is not available" div
+# Function to check if a video is available based on the "Video is not available" div
 def is_video_playable(video_url):
     try:
         # Fetch the video page to check if the "Video is not available" message exists
@@ -45,13 +45,14 @@ def scrape_video_and_thumbnail(url):
                 video_url = video_tag['href']
                 if video_url.startswith('/videos/'):
                     video_url = 'https://xhamster.com' + video_url
+
                 if "https://xhamster.com/videos/" in video_url:
-                    # Check if the video is available (playable)
+                    # Check if the video is available (playable) by visiting the video URL
                     if is_video_playable(video_url):
                         videos.append(video_url)
                         logger.info(f"Found playable video URL: {video_url}")
 
-                        # Extract the corresponding thumbnail URL since the video is playable
+                        # Extract the corresponding thumbnail URL if the video is playable
                         thumbnail_tag = item.find('img', class_='thumb-image-container__image')
                         if thumbnail_tag:
                             thumbnail_url = thumbnail_tag['src']
@@ -77,4 +78,3 @@ def scrape_video_and_thumbnail(url):
     except Exception as e:
         logger.error(f"An error occurred while scraping: {e}")
         return [], []
-        
