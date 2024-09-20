@@ -7,7 +7,7 @@ from scraper import scrape_video_and_thumbnail
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Function to check if a video is available based on "Video is not available" message
+# Function to check if a video is available based on the "Video is not available" message
 def is_video_playable(video_url):
     try:
         logger.info(f"Checking video availability for: {video_url}")
@@ -58,6 +58,6 @@ def check_and_generate_files(url):
 
 # Example usage
 if __name__ == '__main__':
-    category_url = "https://xhamster.com/categories/indian"
+    category_url = "https://xhamster.com/categories/indian/9"
     video_file, thumbnail_file = check_and_generate_files(category_url)
     print(f"Files generated: {video_file}, {thumbnail_file}")
