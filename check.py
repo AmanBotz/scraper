@@ -55,9 +55,3 @@ def check_and_generate_files(url):
 
     logger.info(f"Available videos: {len(available_videos)}, Available thumbnails: {len(available_thumbnails)}")
     return video_file_path, thumbnail_file_path
-
-# Example usage
-if __name__ == '__main__':
-    category_url = "https://xhamster.com/categories/indian/9"
-    video_file, thumbnail_file = check_and_generate_files(category_url)
-    print(f"Files generated: {video_file}, {thumbnail_file}")
