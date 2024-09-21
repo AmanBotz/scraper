@@ -8,9 +8,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Example: Proxy settings for a free Indian proxy
-# Replace 'your-indian-proxy' and 'port' with actual values from a proxy provider
 proxies = {
-    'http': 'http://103.26.109.62:84',
+    'http': 'http://104.211.67.168:80',
     'https': 'http://104.211.67.168:80'
 }
 
@@ -18,8 +17,8 @@ proxies = {
 def is_video_playable(video_url):
     try:
         logger.info(f"Checking video availability for: {video_url} via Indian proxy")
-        # Request the video page using the Indian proxy
-        response = requests.get(video_url, proxies=proxies)
+        # Add a timeout (e.g., 10 seconds) to avoid long waits for unresponsive proxies
+        response = requests.get(video_url, proxies=proxies, timeout=10)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
 
@@ -31,6 +30,14 @@ def is_video_playable(video_url):
 
         logger.info(f"Video is available: {video_url}")
         return True
+
+    except requests.exceptions.Timeout:
+        logger.error(f"Timeout occurred while checking video availability for {video_url}")
+        return False  # Treat as unavailable if the proxy is too slow
+
+    except requests.exceptions.ProxyError:
+        logger.error(f"Proxy error while checking video availability for {video_url}")
+        return False  # Treat as unavailable if the proxy fails
 
     except Exception as e:
         logger.error(f"Error checking video availability for {video_url}: {e}")
