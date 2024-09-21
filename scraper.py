@@ -57,9 +57,3 @@ def scrape_video_and_thumbnail(url):
     except Exception as e:
         logger.error(f"An error occurred while scraping: {e}")
         return [], []
-
-# Example usage
-if __name__ == '__main__':
-    url = "https://xhamster.com/categories/indian/9"
-    videos, thumbnails = scrape_video_and_thumbnail(url)
-    print(videos, thumbnails)
