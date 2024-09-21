@@ -7,18 +7,19 @@ from scraper import scrape_video_and_thumbnail
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Example headers simulating a request from India
-headers = {
-    'X-Forwarded-For': '103.48.198.141',  # Replace with an actual Indian IP if possible
-    'GeoIP-Country-Code': 'IN'
+# Example: Proxy settings for a free Indian proxy
+# Replace 'your-indian-proxy' and 'port' with actual values from a proxy provider
+proxies = {
+    'http': 'http://103.26.109.62:84',
+    'https': 'http://104.211.67.168:80'
 }
 
 # Function to check if a video is available based on the "Video is not available" message
 def is_video_playable(video_url):
     try:
-        logger.info(f"Checking video availability for: {video_url} as if from India")
-        # Request the video page using headers that simulate an Indian IP
-        response = requests.get(video_url, headers=headers)
+        logger.info(f"Checking video availability for: {video_url} via Indian proxy")
+        # Request the video page using the Indian proxy
+        response = requests.get(video_url, proxies=proxies)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, 'html.parser')
 
@@ -61,9 +62,3 @@ def check_and_generate_files(url):
 
     logger.info(f"Available videos: {len(available_videos)}, Available thumbnails: {len(available_thumbnails)}")
     return video_file_path, thumbnail_file_path
-
-# Example usage
-if __name__ == '__main__':
-    category_url = "https://xhamster.com/categories/indian"
-    video_file, thumbnail_file = check_and_generate_files(category_url)
-    print(f"Files generated: {video_file}, {thumbnail_file}")
