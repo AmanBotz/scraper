@@ -9,8 +9,8 @@ logger = logging.getLogger(__name__)
 
 # Example: Proxy settings for a free Indian proxy
 proxies = {
-    'http': 'http://104.211.67.168:80',
-    'https': 'http://104.211.67.168:80'
+    'http': 'http://103.170.62.7:8080',
+    'https': 'http://160.25.180.35:8080'
 }
 
 # Function to check if a video is available based on the "Video is not available" message
