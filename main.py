@@ -25,6 +25,9 @@ async def scrape(update: Update, context):
     video_file, thumbnail_file = check_and_generate_files(url)
 
     if video_file and thumbnail_file:
+        # Wait until the check is complete before sending files
+        logger.info("Waiting for video availability check to complete")
+
         # Send the video URLs file
         with open(video_file, "rb") as vf:
             await update.message.reply_document(InputFile(vf, filename="video_urls.txt"))
@@ -53,7 +56,7 @@ def main():
     thread.start()
 
     # Create the Application and set the bot token from the environment variable
-    app = ApplicationBuilder().token(os.getenv("BOT_TOK")).build()
+    app = ApplicationBuilder().token(os.getenv("TELEGRAM_BOT_TOKEN")).build()
 
     # Handlers
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, scrape))
